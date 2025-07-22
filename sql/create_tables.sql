@@ -1,6 +1,7 @@
 -- =================================================================
--- SQL CREATE TABLE Statements
+-- SQL CREATE TABLE Statements (Updated)
 -- Description: These commands create the database structure based on our schema.
+--              Includes 'notes' columns for additional context.
 -- Database: PostgreSQL
 -- =================================================================
 
@@ -26,7 +27,8 @@ CREATE TABLE fuel_stops (
     stop_date DATE NOT NULL,
     gallons DECIMAL(6, 3) NOT NULL CHECK (gallons > 0),
     total_cost DECIMAL(10, 2) NOT NULL CHECK (total_cost > 0),
-    location VARCHAR(255)
+    location VARCHAR(255),
+    notes TEXT -- Added for contextual information
 );
 
 -- Table 3: expenses
@@ -37,5 +39,6 @@ CREATE TABLE expenses (
     expense_date DATE NOT NULL,
     category VARCHAR(100) NOT NULL,
     amount DECIMAL(10, 2) NOT NULL CHECK (amount >= 0),
-    description TEXT
+    description TEXT, -- This will store the 'Item Description'
+    notes TEXT -- Added for contextual information
 );
