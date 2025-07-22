@@ -1,0 +1,11 @@
+# pandas: The core library for data manipulation and analysis.
+# psycopg2-binary: The most popular driver for connecting Python to a PostgreSQL database.
+# gspread: The main library for interacting with the Google Sheets API.
+# gspread-dataframe: A helpful utility to easily convert a Google Sheet into a pandas DataFrame.
+# google-auth-oauthlib: A dependency for gspread to handle the authentication with Google's services.
+
+pandas
+psycopg2-binary
+gspread
+gspread-dataframe
+google-auth-oauthlib
