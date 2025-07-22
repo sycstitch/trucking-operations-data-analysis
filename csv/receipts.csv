@@ -1,0 +1,12 @@
+Trip,Expense Date,Category,Amount,Item Description (What),Notes (Why)
+"2025-07-14 to Columbus, OH",2025-07-14,Food,12.50,"Snacks and coffee",
+"2025-07-16 to New York, NY",2025-07-17,Toll,85.50,"PA & NJ Turnpikes",
+"2025-07-16 to New York, NY",2025-07-17,Food,45.20,"Extra meal",Due to long wait time
+"2025-07-19 to Charlotte, NC",2025-07-20,Food,15.75,"Drinks and snacks",At truck stop
+"2025-07-22 to Laredo, TX",2025-07-23,Food,22.50,"Quick lunch",
+"2025-07-22 to Laredo, TX",2025-07-24,Food,9.80,"Coffee and a pastry",
+"2025-07-26 to Chicago, IL",2025-07-27,Maintenance,450.00,"Emergency tire replacement",
+"2025-07-26 to Chicago, IL",2025-07-27,Food,38.75,"Dinner",While waiting for repair
+"2025-07-26 to Chicago, IL",2025-07-28,Food,18.45,"Late night snacks",
+"2025-07-29 to New York, NY",2025-07-30,Toll,95.00,"NY Bridge and Turnpike tolls",
+"2025-07-29 to New York, NY",2025-07-30,Fine,250.00,"Parking violation",While waiting for unload

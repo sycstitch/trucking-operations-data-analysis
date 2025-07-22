@@ -1,0 +1,7 @@
+Load Date,Pickup Location,Dropoff Location,Total Miles,Revenue,Is Drop and Hook,Wait Time Hours,Notes
+2025-07-14,"Chicago, IL","Columbus, OH",360,1100.00,TRUE,0.5,Easy trip.
+2025-07-16,"Columbus, OH","New York, NY",540,2300.00,FALSE,4.5,"Live unload in the city, lots of traffic and waiting."
+2025-07-19,"Kearny, NJ","Charlotte, NC",635,2150.00,TRUE,1.0,
+2025-07-22,"Charlotte, NC","Laredo, TX",1250,3500.00,TRUE,0.5,"Long haul, but good miles."
+2025-07-26,"Laredo, TX","Chicago, IL",1180,2800.00,FALSE,2.0,"Tire blowout on I-35, had to get maintenance."
+2025-07-29,"Chicago, IL","New York, NY",790,2950.00,FALSE,5.0,"Another rough NYC trip, but paid well."

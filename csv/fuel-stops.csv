@@ -1,0 +1,9 @@
+Trip,Stop Date,Gallons,Total Cost,Location,Notes
+"2025-07-14 to Columbus, OH",2025-07-14,65.5,255.45,"Indianapolis, IN",
+"2025-07-16 to New York, NY",2025-07-17,95.2,418.88,"Carlisle, PA",High fuel prices in this area
+"2025-07-19 to Charlotte, NC",2025-07-20,110.0,418.00,"Roanoke, VA",
+"2025-07-22 to Laredo, TX",2025-07-23,150.0,555.00,"Shreveport, LA",
+"2025-07-22 to Laredo, TX",2025-07-24,115.8,432.75,"San Antonio, TX",
+"2025-07-26 to Chicago, IL",2025-07-27,135.0,513.00,"Dallas, TX",
+"2025-07-26 to Chicago, IL",2025-07-28,90.0,351.00,"St. Louis, MO",
+"2025-07-29 to New York, NY",2025-07-30,140.1,623.45,"Eastern PA",Extremely high fuel prices
