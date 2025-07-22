@@ -13,14 +13,15 @@ SELECT
     l.revenue,
     l.total_miles,
     COALESCE(SUM(fs.total_cost), 0) AS total_fuel_cost,
-    COALESCE(SUM(fs.gallons), 0) AS total_gallons_used,
     COALESCE(SUM(e.amount), 0) AS total_other_expenses,
+    -- Calculate total cost
+    (COALESCE(SUM(fs.total_cost), 0) + COALESCE(SUM(e.amount), 0)) AS total_cost,
+    -- Calculate Net Profit
+    l.revenue - (COALESCE(SUM(fs.total_cost), 0) + COALESCE(SUM(e.amount), 0)) AS net_profit,
     -- Calculate Cost Per Mile (CPM)
     (COALESCE(SUM(fs.total_cost), 0) + COALESCE(SUM(e.amount), 0)) / l.total_miles AS cost_per_mile,
     -- Calculate Miles Per Gallon (MPG)
-    l.total_miles / NULLIF(COALESCE(SUM(fs.gallons), 0), 0) AS miles_per_gallon,
-    -- Calculate Net Profit
-    l.revenue - (COALESCE(SUM(fs.total_cost), 0) + COALESCE(SUM(e.amount), 0)) AS net_profit
+    l.total_miles / NULLIF(COALESCE(SUM(fs.gallons), 0), 0) AS miles_per_gallon
 FROM
     loads l
 LEFT JOIN
@@ -54,23 +55,45 @@ ORDER BY
 SELECT
     pickup_location,
     dropoff_location,
-    COUNT(load_id) AS number_of_trips,
-    AVG(l.total_miles / NULLIF(fs.total_gallons_used, 0)) AS avg_mpg,
-    AVG((fs.total_fuel_cost + ex.total_other_expenses) / l.total_miles) AS avg_cost_per_mile,
+    COUNT(l.load_id) AS number_of_trips,
+    AVG((l.revenue - agg.total_trip_cost) / l.total_miles) AS avg_profit_per_mile,
     AVG(l.revenue / l.total_miles) AS avg_revenue_per_mile,
-    AVG(l.revenue - (fs.total_fuel_cost + ex.total_other_expenses)) AS avg_net_profit
+    AVG(agg.total_trip_cost / l.total_miles) AS avg_cost_per_mile,
+    AVG(l.total_miles / NULLIF(agg.total_gallons_used, 0)) AS avg_mpg
 FROM
     loads l
 JOIN
-    -- Pre-aggregate fuel data per load
-    (SELECT load_id, SUM(total_cost) AS total_fuel_cost, SUM(gallons) AS total_gallons_used FROM fuel_stops GROUP BY load_id) fs
-    ON l.load_id = fs.load_id
-JOIN
-    -- Pre-aggregate expense data per load
-    (SELECT load_id, SUM(amount) AS total_other_expenses FROM expenses GROUP BY load_id) ex
-    ON l.load_id = ex.load_id
+    -- Pre-aggregate all costs and fuel per load
+    (
+        SELECT
+            l.load_id,
+            COALESCE(SUM(fs.total_cost), 0) + COALESCE(SUM(e.amount), 0) AS total_trip_cost,
+            COALESCE(SUM(fs.gallons), 0) AS total_gallons_used
+        FROM loads l
+        LEFT JOIN fuel_stops fs ON l.load_id = fs.load_id
+        LEFT JOIN expenses e ON l.load_id = e.load_id
+        GROUP BY l.load_id
+    ) agg ON l.load_id = agg.load_id
 GROUP BY
     pickup_location,
     dropoff_location
 ORDER BY
-    avg_net_profit DESC;
+    avg_profit_per_mile DESC;
+
+-- Query 4: Detailed Expense Report with Context
+-- Drills down into a specific load to see all expenses and their context.
+-- This is great for figuring out *why* a specific trip was unprofitable.
+SELECT
+    l.load_date,
+    l.dropoff_location,
+    e.expense_date,
+    e.category,
+    e.amount,
+    e.description AS item_description,
+    e.notes AS reason_for_expense
+FROM
+    expenses e
+JOIN
+    loads l ON e.load_id = l.load_id
+ORDER BY
+    l.load_date, e.expense_date;
