@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+*.env
+
+# Secrets
+credentials.json
+
+# IDE / OS specific
+.idea/
+.vscode/
+.DS_Store
