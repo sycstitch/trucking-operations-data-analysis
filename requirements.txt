@@ -9,3 +9,5 @@ psycopg2-binary
 gspread
 gspread-dataframe
 google-auth-oauthlib
+matplotlib
+seaborn
