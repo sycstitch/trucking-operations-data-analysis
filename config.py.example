@@ -1,0 +1,17 @@
+# =================================================================
+# Database Configuration
+#
+# Instructions:
+# 1. Copy this file and rename it to `config.py`.
+# 2. Fill in your actual PostgreSQL database credentials below.
+# 3. IMPORTANT: Make sure `config.py` is listed in your `.gitignore`
+#    file to prevent committing your secret credentials.
+# =================================================================
+
+DB_CONFIG = {
+    "dbname": "trucking_db",
+    "user": "your_postgres_user",
+    "password": "your_secret_password",
+    "host": "localhost",
+    "port": "5432"
+}
