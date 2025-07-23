@@ -34,9 +34,9 @@ GOOGLE_SHEET_NAME = 'trucking-analytics'
 
 # The exact names of the tabs (worksheets) within your Google Sheet.
 SHEET_NAMES = {
-    "loads": "Load Logs",
-    "fuel": "Fuel Stops",
-    "expenses": "Receipts"
+    "loads": "LOADS",
+    "fuel": "FUEL",
+    "expenses": "EXPENSES"
 }
 
 # Path to your service account credentials file.
@@ -136,7 +136,7 @@ def insert_data(cursor, data):
         db_load_id = trip_to_db_id_map.get(row['Trip'])
         if db_load_id:
             sql = "INSERT INTO expenses (load_id, expense_date, category, amount, description, notes) VALUES (%s, %s, %s, %s, %s, %s);"
-            cursor.execute(sql, (db_load_id, row['Expense Date'], row['Category'], row['Amount'], row['Item Description'], row['Notes']))
+            cursor.execute(sql, (db_load_id, row['Expense Date'], row['Category'], row['Amount'], row['Item Description (What)'], row['Notes (Why)']))
         else:
             print(f"    ⚠️ WARNING: Skipping expense. Could not find matching trip for '{row['Trip']}'.")
     print("    ↳ 'Receipts' data inserted.")
