@@ -93,9 +93,115 @@ def generate_visualizations(df_profit, df_expenses, df_routes, df_expense_detail
     plt.close()
 
     # Visualization 4: Detailed expenses per trip (optional: maybe heatmap or line chart)
-    # You can expand this later to include visualizations for Query 4 if useful
+    trip_expenses = df_expense_details[df_expense_details['dropoff_location'] == 'Chicago, IL']
+    trip_expenses = trip_expenses[trip_expenses['load_date'] == pd.to_datetime('2025-07-26')]
+
+    category_totals = trip_expenses.groupby('category')['amount'].sum().sort_values()
+
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x=category_totals.values, y=category_totals.index, palette='flare')
+    plt.title('Expense Breakdown: Laredo → Chicago (July 26 Trip)', fontsize=14, weight='bold')
+    plt.xlabel('Amount ($)')
+    plt.ylabel('Category')
+    plt.tight_layout()
+    plt.savefig(os.path.join(OUTPUT_DIR, 'july_26_expense_breakdown.png'))
+    plt.close()
 
     print("✅ All visualizations generated.")
+
+def visualize_expense_comparison(df_profitability, df_expense_details):
+    """Generates a comparison of expenses for low, average, and high-profit trips."""
+
+    print("📊 Generating comparative expense breakdown for key trips...")
+
+    # Identify trips
+    sorted_profit = df_profitability.sort_values(by='net_profit')
+
+    # debug: check sorted_profit dataframe (positional indexer)
+    print("🔍 Sorted profit DataFrame shape:", sorted_profit.shape)
+    print("🔍 Sorted_profit preview:\n", sorted_profit[['load_id', 'net_profit']].head())
+    if sorted_profit.empty:
+        print("❌ sorted_profit is empty!")
+        return
+
+    trip_low = sorted_profit.iloc[0]
+    trip_high = sorted_profit.iloc[-1]
+
+    # Exclude high and low profit trips from the avg candidate pool
+    exclude_ids = {trip_low['load_id'], trip_high['load_id']}
+    avg_candidates = sorted_profit[~sorted_profit['load_id'].isin(exclude_ids)]
+
+    # debug: check 'avg' dataframe (positional indexer)
+    print(f"Avg candidates shape: {avg_candidates.shape}")
+    print("Avg candidates preview:")
+    print(avg_candidates[['load_id', 'net_profit']])
+
+    if avg_candidates.empty:
+        print("⚠️ Not enough trips left to determine an average. Using low-profit trip as fallback.")
+        trip_avg = trip_low
+    else:
+        mean_profit = avg_candidates['net_profit'].mean()
+        closest_idx = (avg_candidates['net_profit'] - mean_profit).abs().idxmin()
+        trip_avg = avg_candidates.loc[closest_idx]
+
+    # Extract trips
+    trips_of_interest = [trip_low['load_id'], trip_avg['load_id'], trip_high['load_id']]
+    expense_subset = df_expense_details[df_expense_details['load_id'].isin(trips_of_interest)].copy()
+
+    # Validate presence of all three
+    missing_trips = set(trips_of_interest) - set(expense_subset['load_id'].unique())
+    if missing_trips:
+        print(f"⚠️ Missing expense data for trip(s): {missing_trips}")
+
+    # Add readable labels
+    trip_labels = {
+        trip_low['load_id']: f"LOW\n{trip_low['dropoff_location']}",
+        trip_avg['load_id']: f"AVG\n{trip_avg['dropoff_location']}",
+        trip_high['load_id']: f"HIGH\n{trip_high['dropoff_location']}"
+    }
+    expense_subset['trip_label'] = expense_subset['load_id'].map(trip_labels)
+    # debug - check load ids
+    print(f"Low: {trip_low['load_id']}, Avg: {trip_avg['load_id']}, High: {trip_high['load_id']}")
+    # debug - check for avg entry
+    print(expense_subset['trip_label'].value_counts())
+
+    # Group and pivot for visualization
+    pivoted = (
+        expense_subset
+        .groupby(['trip_label', 'category'])['amount']
+        .sum()
+        .unstack(fill_value=0)
+    )
+    pivoted = pivoted[pivoted.sum().sort_values(ascending=False).index]  # sort categories
+
+    # Plot stacked bar
+    fig, ax = plt.subplots(figsize=(12, 8))
+    pivoted.plot(kind='bar', stacked=True, colormap='Set2', ax=ax)
+
+    ax.set_title('Trip Expense Comparison: Low vs Avg vs High Profit', fontsize=16, weight='bold')
+    ax.set_xlabel('Trip')
+    ax.set_ylabel('Total Expenses ($)')
+    ax.legend(title='Expense Type', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+    fig.tight_layout(rect=[0, 0, 1, 0.95])  # Leaves room for title
+    fig.savefig(os.path.join(OUTPUT_DIR, 'trip_expense_comparison.png'))
+    plt.close()
+
+    # Optional: export summary CSV
+    trip_dict = {
+        trip_low['load_id']: trip_low,
+        trip_avg['load_id']: trip_avg,
+        trip_high['load_id']: trip_high
+    }
+    summary = pd.DataFrame(trip_dict.values())[
+        ['load_id', 'dropoff_location', 'total_miles', 'revenue', 'total_cost', 'net_profit']
+    ]
+    summary['profit_per_mile'] = (summary['net_profit'] / summary['total_miles']).round(2)
+    summary['expenses_per_mile'] = (summary['total_cost'] / summary['total_miles']).round(2)
+
+    summary.to_csv(os.path.join(OUTPUT_DIR, 'trip_comparison_summary.csv'), index=False)
+
+    print("✅ Expense comparison visualization saved.")
 
 def print_insights(df_profit, df_expenses):
     """Analyzes the dataframes and prints key insights to the console."""
@@ -155,6 +261,8 @@ def main():
             df_routes=df_route_analysis,
             df_expense_details=df_expense_details
         )
+
+        visualize_expense_comparison(df_profitability, df_expense_details)
 
         print_insights(df_profitability, df_monthly_expenses)
 

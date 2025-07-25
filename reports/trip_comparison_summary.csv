@@ -1,0 +1,4 @@
+load_id,dropoff_location,total_miles,revenue,total_cost,net_profit,profit_per_mile,expenses_per_mile
+5,"Chicago, IL",1180,2800.0,3606.4,-806.4,-0.68,3.06
+2,"New York, NY",540,2300.0,968.46,1331.54,2.47,1.79
+3,"Charlotte, NC",635,2150.0,433.75,1716.25,2.7,0.68

@@ -84,6 +84,7 @@ ORDER BY
 -- Drills down into a specific load to see all expenses and their context.
 -- This is great for figuring out *why* a specific trip was unprofitable.
 SELECT
+    l.load_id,
     l.load_date,
     l.dropoff_location,
     e.expense_date,
