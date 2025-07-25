@@ -75,6 +75,20 @@ generate_visualizations(
 
 ---
 
+### Datetime Conversion Error
+    * fixes #5
+    * **Problem:** The script failed with a `TypeError: Can only use .dt accessor with datetimelike values`. This occurred because the `load_date` column read from the database was not automatically recognized as a proper datetime object by pandas.
+    * **Solution:** An explicit conversion step, `df['load_date'] = pd.to_datetime(df['load_date'])`, was added immediately after fetching the data to ensure the column has the correct data type before any plotting operations.
+
+---
+
+### Incorrect Query Execution
+    * fixes #6
+    * **Problem:** The script failed with a `KeyError` because it was attempting to run all queries from the `analysis_queries.sql` file at once, causing it to use the wrong data for a given visualization.
+    * **Solution:** The script's logic was refactored to first read the entire SQL file, then split the content into a list of individual queries. Each query is now executed separately, and the resulting DataFrame is passed to the correct analysis or visualization function, ensuring data integrity.
+
+---
+
 ### ❌ Missing "AVG" in Visualization
 
 **Symptom:**
